@@ -22,7 +22,7 @@ class Mashed {
     fetch(flickrUrl)
       .then(res => res.json())
       .then(res => {
-        console.log('Got response from FlickR!')
+        console.log('Got response from Flickr!')
         console.log(res)
       })
       .catch(err => console.error(err))
@@ -31,6 +31,11 @@ class Mashed {
   fetchWordlabWords(query) {
     let wordLabAPIkey = '9d30c37acd6d49022f294eeff979f914'
     let wordLabUrl = `http://words.bighugelabs.com/api/2/${wordLabAPIkey}/${query}/json`
+    // http://words.bighugelabs.com/api/{version}/{api key}/{word}/{format}
+
+//Get an API key 
+
+
 
     fetch(wordLabUrl)
       .then(res => res.json())
