@@ -118,7 +118,7 @@ class Mashed {
   }
 
   fetchWordlabWords(query) {
-    let wordLabAPIkey = process.env.BHT_API_KEY
+    let wordLabAPIkey = process.env.BIGHUGELABS_API_KEY
     let wordLabUrl = `http://words.bighugelabs.com/api/2/${wordLabAPIkey}/${query}/json`
 
     return fetch(wordLabUrl)
