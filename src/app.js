@@ -12,7 +12,7 @@ function fetchFlickrPhotos(query) {
       api_key: process.env.FLICKR_API_KEY,
       text: query,
       sort: 'relevance',
-      extras: 'original_format, url_o, url_q',
+      extras: 'original_format, url_z',
       license: '2,4,5,6,7',
       per_page: 10,
       format: 'json',
@@ -59,9 +59,27 @@ const searchBtn = document.querySelector('.search button');
 searchBtn.addEventListener('click', (event) => {
   console.log('Clicked', event.target);
   console.log('And the input has value: ', searchInput.value);
-  fetchFlickrPhotos(searchInput.value);
+  fetchFlickrPhotos(searchInput.value).then(renderFlickrPhotos);
   associatedWordSearch(searchInput.value);
 });
+
+function renderFlickrPhotos(photoData) {
+  const photosList = document.querySelector('.results ul'); 
+  photosList.innerHTML = "";
+
+  photoData.photos.photo.forEach((photo) => {
+    const photoLi = document.createElement('li');
+    const photoP = document.createElement('p'); 
+
+    photoP.textContent = photo.title;
+    photoLi.style.backgroundImage = `url(${photo.url_z})`;
+    photoLi.classList.add('result');
+    photoLi.appendChild(photoP);
+    photosList.appendChild(photoLi);
+
+  });
+}
+
 
 
 /* function searchBtn() {
