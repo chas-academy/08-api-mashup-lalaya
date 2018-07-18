@@ -1,7 +1,79 @@
 import './styles/app.scss';
-import {on, sanitizeString, getPromiseData, axelVisar, flatten} from './helpers/';
+import {objectToQueryParams} from './helpers/';
 
-class Mashed {
+
+
+// Flickr API call 
+function fetchFlickrPhotos(query) {
+
+    let resourceUrl = `https://api.flickr.com/services/rest/?`;
+    let flickrQueryParams = {
+      method: 'flickr.photos.search',
+      api_key: process.env.FLICKR_API_KEY,
+      text: query,
+      sort: 'relevance',
+      extras: 'original_format, url_o, url_q',
+      license: '2,4,5,6,7',
+      per_page: 10,
+      format: 'json',
+      nojsoncallback: 1,
+      dimension_search_mode: "max"
+    };
+
+    let flickrUrl = `${resourceUrl}${objectToQueryParams(flickrQueryParams)}`
+
+    return fetch(flickrUrl)
+      .then(res => res.json())
+      .then(res => {
+        
+        return res;
+        // renderFlickerPhotos(res.photos.photo)
+      })
+      .catch (error => console.log('Something went wrong when calling flickr API'));
+}
+ 
+
+
+// WordLab API Search
+function associatedWordSearch(query) {
+
+    let worldLabAPIKey = process.env.WORLDLT_API_KEY
+    let wordLabUrl = `http://words.bighugelabs.com/api/2/${worldLabAPIKey}/${query}/json`
+
+    return fetch(wordLabUrl)
+      .then(res => res.json())
+      .then(res => {
+        // Nu kan vi börja bygga grejer i DOM:en, går bra att göra direkt i denna callbacken
+        // Eller, så lägger vi det i en funktion, som tar emot svaret från API:et
+        //this.renderWordSuggestions(res) // Ropa på funktion
+        return res;
+      })
+      .catch (error => console.log('Something went wrong'));
+}
+
+//associatedWordSearch('bike');
+
+const searchInput = document.querySelector('.search input');
+const searchBtn = document.querySelector('.search button');
+
+searchBtn.addEventListener('click', (event) => {
+  console.log('Clicked', event.target);
+  console.log('And the input has value: ', searchInput.value);
+  fetchFlickrPhotos(searchInput.value);
+  associatedWordSearch(searchInput.value);
+});
+
+
+/* function searchBtn() {
+  $('.search').on('click', function() {
+
+
+
+  
+});  */ 
+
+
+/*class Mashed {
   constructor(element) {
     this.root = element;
 
@@ -12,9 +84,9 @@ class Mashed {
     const searchInput = document.querySelector('.search input');
     const searchBtn = document.querySelector('.search button');
 
-    searchBtn.addEventListener('click', () => {
+    searchBtn.addEventListener('click', (event) => {
       console.log('Clicked', event.target);
-      console.log('And the input has value ', );
+      console.log('And the input has value ', searchInput.value);
       this.fetchWordlabWords(searchInput.value);
       this.fetchFlickrPhotos(searchInput.value);
     });
@@ -90,47 +162,7 @@ class Mashed {
 
   }
 
-  fetchFlickrPhotos(query) {
-    let flickrAPIkey = process.env.FLICKR_API_KEY
-    let resourceUrl = `https://api.flickr.com/services/rest/?`;
-
-    let params = {
-      method: 'flickr.photos.search',
-      api_key: flickrAPIkey,
-      text: query,
-      sort: 'relevance',
-      extras: 'original_format, url_o, url_q',
-      license: '2,4,5,6,7',
-      per_page: 10,
-      format: 'json',
-      nojsoncallback: 1,
-      dimension_search_mode: "max"
-    };
-
-    let flickrQueryParams = axelVisar(params);
-    let flickrUrl = `${resourceUrl}${flickrQueryParams}`
-
-    return fetch(flickrUrl)
-      .then(res => res.json())
-      .then(res => {
-        this.renderFlickerPhotos(res.photos.photo);
-      });
-  }
-
-  fetchWordlabWords(query) {
-    let wordLabAPIkey = process.env.BIGHUGELABS_API_KEY
-    let wordLabUrl = `http://words.bighugelabs.com/api/2/${wordLabAPIkey}/${query}/json`
-
-    return fetch(wordLabUrl)
-      .then(res => res.json())
-      .then(res => {
-        // Nu kan vi börja bygga grejer i DOM:en, går bra att göra direkt i denna callbacken
-        // Eller, så lägger vi det i en funktion, som tar emot svaret från API:et
-        this.renderWordSuggestions(res) // Ropa på funktion
-      });
-  }
-}
 
 (function() {
-  new Mashed(document.querySelector('#mashed'))
-})();
+  new Mashed(document.querySelector('#mashed')) 
+})(); */ 
