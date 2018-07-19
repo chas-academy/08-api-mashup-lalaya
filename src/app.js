@@ -2,19 +2,20 @@ import './styles/app.scss';
 import {objectToQueryParams} from './helpers/';
 
 
-(function() {
-  const searchInput = document.querySelector('.search input');
-  const searchForm = document.querySelector('#searchForm');
+// Search 
+const searchInput = document.querySelector('.search input');
+const searchForm = document.querySelector('#searchForm');
 
-  // Search
-  searchForm.addEventListener('submit', (event) => {
-    fetchFlickrPhotos(searchInput.value).then(renderFlickrPhotos);
-    associatedWordSearch(searchInput.value).then(renderAssociatedWords);
-    event.preventDefault();
-    return false;
-  });
-})();
+searchForm.addEventListener('submit', (event) => {
+  search(searchInput.value);
+  event.preventDefault();
+  return false;
+});
 
+function search(query) {
+  fetchFlickrPhotos(query).then(renderFlickrPhotos);
+  associatedWordSearch(query).then(renderAssociatedWords);
+}
 
 
 // Flickr API call 
@@ -43,7 +44,8 @@ function fetchFlickrPhotos(query) {
     })
     .catch (error => console.log('Something went wrong when calling flickr API'));
 }
- 
+
+
 // WordLab API Search
 function associatedWordSearch(query) {
 
@@ -60,7 +62,6 @@ function associatedWordSearch(query) {
 }
 
 
-
 // Flickr showing search results 
 function renderFlickrPhotos(photoData) {
   const photosList = document.querySelector('.results ul'); 
@@ -68,17 +69,18 @@ function renderFlickrPhotos(photoData) {
 
   photoData.photos.photo.forEach((photo) => {
     const photoLi = document.createElement('li');
-    // const photoP = document.createElement('p'); 
 
-    // photoP.textContent = photo.title;
     photoLi.style.backgroundImage = `url(${photo.url_z || photo.url_o})`;
     photoLi.classList.add('result');
-   // photoLi.appendChild(photoP);
     photosList.appendChild(photoLi);
+
+    photoLi.addEventListener("click", () => {
+      window.location.href = photo.url_o;
+    });
   });
 }
 
- 
+
 // WordLab showing search results
 function renderAssociatedWords(words) {
   const wordList = document.querySelector('#associated-words');
@@ -94,87 +96,11 @@ function renderAssociatedWords(words) {
     liEl.textContent = word;
 
     wordList.appendChild(liEl);
+
+    liEl.addEventListener("click", () => {
+      searchInput.value = word;
+      search(word);
+    });
   });
 }
 
-
-/* function searchBtn() {
-  $('.search').on('click', function() {
-
-
-
-  
-});  */ 
-
-
-/*class Mashed {
-  constructor(element) {
-    this.root = element;
-
-    this.addEventListeners();
-  }
-
-
-
-    const sidebarWords = document.querySelectorAll('aside ul li a');
-
-    sidebarWords.forEach((sidebarWord) => {
-      sidebarWord.addEventListener('click', function() {
-        // TODO: Trigger flickr and word api fetch with Promise.all()
-      });
-    });
-  }
-*/ 
-
-/*
-  function search() {
-    let query = this.searchInput.value;
-
-    if (!query.length) {
-      return;
-    }
-
-    let apiCalls = [
-      this.fetchFlickrPhotos(query),
-      this.fetchWordlabWords(query)
-    ]
-
-    getPromiseData(apiCalls)
-      .then((result) => {
-        console.log(result)
-      });
-  }
-
-*/ 
-
-/*
-  renderWordSuggestions(res) {
-    const sidebarListHolder = document.querySelector('aside ul');
-
-    let words = Object.keys(res).map(key => {
-      return Object.values(res[key]).map(w => {
-        return w
-      });
-    });
-
-    words = flatten(words); // Spara över words med den tillplattade versionen av sig själv
-
-    words.forEach((word) => {
-      let listItem = document.createElement('li');
-      let link = document.createElement('a');
-
-      link.href = "#";
-      link.textContent = word;
-
-      listItem.appendChild(link);
-      sidebarListHolder.appendChild(listItem);
-    });
-
-    this.addEventListeners();
-
-  }
-
-
-(function() {
-  new Mashed(document.querySelector('#mashed')) 
-})(); */ 
