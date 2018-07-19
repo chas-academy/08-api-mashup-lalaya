@@ -37,9 +37,10 @@ aside {
   color: lightgrey;
   border: 2px solid lightgrey; flex: 1;
 
-  ul {
-    display: flex;
-    flex-direction: column;
+  #associated-words {
+  display: flex;
+  flex-direction: column;
+  
 
     li {
       display: flex;
@@ -47,19 +48,12 @@ aside {
       font-size: 1.5em;
       line-height: 50px;
       border-bottom: 2px solid lightgrey;
-
-      a {
-        width: 100%;
-        text-align: center;
-        text-decoration: none;
-        color: black;
-      }
+      color: lightseagreen;
 
       &:hover {
-        background-color: lighten(darkslategrey, 10);
-        a {
-          color: #fff;
-        }
+        background-color: lighten(darkslategrey, 10); 
+        color: #fff;
+        cursor: pointer;
       }
     }
   }
@@ -123,14 +117,18 @@ aside {
     }
     &:hover {
       cursor: pointer;
-      background-color: lighten(slategray, 10%);
+      background-color: lighten(darkslategrey, 10%);
     }
   }
 }
 
 footer {
-  background-color: lightgrey;
-  height: 250px;
-  font-size: 1em;
-  @include flex-center;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: darkslategrey;
+  color: white;
+  font-size: 10px;
+  text-align: center;
+  line-height: 40px;
 }

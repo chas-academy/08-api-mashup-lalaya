@@ -2,84 +2,100 @@ import './styles/app.scss';
 import {objectToQueryParams} from './helpers/';
 
 
+(function() {
+  const searchInput = document.querySelector('.search input');
+  const searchForm = document.querySelector('#searchForm');
+
+  // Search
+  searchForm.addEventListener('submit', (event) => {
+    fetchFlickrPhotos(searchInput.value).then(renderFlickrPhotos);
+    associatedWordSearch(searchInput.value).then(renderAssociatedWords);
+    event.preventDefault();
+    return false;
+  });
+})();
+
+
 
 // Flickr API call 
 function fetchFlickrPhotos(query) {
 
-    let resourceUrl = `https://api.flickr.com/services/rest/?`;
-    let flickrQueryParams = {
-      method: 'flickr.photos.search',
-      api_key: process.env.FLICKR_API_KEY,
-      text: query,
-      sort: 'relevance',
-      extras: 'original_format, url_z',
-      license: '2,4,5,6,7',
-      per_page: 10,
-      format: 'json',
-      nojsoncallback: 1,
-      dimension_search_mode: "max"
-    };
+  let resourceUrl = `https://api.flickr.com/services/rest/?`;
+  let flickrQueryParams = {
+    method: 'flickr.photos.search',
+    api_key: process.env.FLICKR_API_KEY,
+    text: query,
+    sort: 'relevance',
+    extras: 'original_format, url_z, url_o',
+    license: '2,4,5,6,7',
+    per_page: 10,
+    format: 'json',
+    nojsoncallback: 1,
+    dimension_search_mode: "max"
+  };
 
-    let flickrUrl = `${resourceUrl}${objectToQueryParams(flickrQueryParams)}`
+  let flickrUrl = `${resourceUrl}${objectToQueryParams(flickrQueryParams)}`
 
-    return fetch(flickrUrl)
-      .then(res => res.json())
-      .then(res => {
-        
-        return res;
-        // renderFlickerPhotos(res.photos.photo)
-      })
-      .catch (error => console.log('Something went wrong when calling flickr API'));
+  return fetch(flickrUrl)
+    .then(res => res.json())
+    .then(res => {
+      return res;
+    })
+    .catch (error => console.log('Something went wrong when calling flickr API'));
 }
  
-
-
 // WordLab API Search
 function associatedWordSearch(query) {
 
-    let worldLabAPIKey = process.env.WORLDLT_API_KEY
-    let wordLabUrl = `http://words.bighugelabs.com/api/2/${worldLabAPIKey}/${query}/json`
+  let worldLabAPIKey = process.env.WORLDLT_API_KEY
+  let wordLabUrl = `https://words.bighugelabs.com/api/2/${worldLabAPIKey}/${query}/json`
 
-    return fetch(wordLabUrl)
-      .then(res => res.json())
-      .then(res => {
-        // Nu kan vi börja bygga grejer i DOM:en, går bra att göra direkt i denna callbacken
-        // Eller, så lägger vi det i en funktion, som tar emot svaret från API:et
-        //this.renderWordSuggestions(res) // Ropa på funktion
-        return res;
-      })
-      .catch (error => console.log('Something went wrong'));
+  return fetch(wordLabUrl)
+    .then(res => res.json())
+    .then(res => {
+      console.log('search word associations finished', res);
+      return res;
+    })
+    .catch (error => console.log('Something went wrong'));
 }
 
-//associatedWordSearch('bike');
 
-const searchInput = document.querySelector('.search input');
-const searchBtn = document.querySelector('.search button');
 
-searchBtn.addEventListener('click', (event) => {
-  console.log('Clicked', event.target);
-  console.log('And the input has value: ', searchInput.value);
-  fetchFlickrPhotos(searchInput.value).then(renderFlickrPhotos);
-  associatedWordSearch(searchInput.value);
-});
-
+// Flickr showing search results 
 function renderFlickrPhotos(photoData) {
   const photosList = document.querySelector('.results ul'); 
   photosList.innerHTML = "";
 
   photoData.photos.photo.forEach((photo) => {
     const photoLi = document.createElement('li');
-    const photoP = document.createElement('p'); 
+    // const photoP = document.createElement('p'); 
 
-    photoP.textContent = photo.title;
-    photoLi.style.backgroundImage = `url(${photo.url_z})`;
+    // photoP.textContent = photo.title;
+    photoLi.style.backgroundImage = `url(${photo.url_z || photo.url_o})`;
     photoLi.classList.add('result');
-    photoLi.appendChild(photoP);
+   // photoLi.appendChild(photoP);
     photosList.appendChild(photoLi);
-
   });
 }
 
+ 
+// WordLab showing search results
+function renderAssociatedWords(words) {
+  const wordList = document.querySelector('#associated-words');
+  wordList.innerHTML = "";
+
+  if (!words.noun) {
+    return false;
+  }
+
+  words.noun.syn.forEach((word) => {
+    const liEl = document.createElement('li');
+
+    liEl.textContent = word;
+
+    wordList.appendChild(liEl);
+  });
+}
 
 
 /* function searchBtn() {
@@ -98,16 +114,7 @@ function renderFlickrPhotos(photoData) {
     this.addEventListeners();
   }
 
-  addEventListeners() {
-    const searchInput = document.querySelector('.search input');
-    const searchBtn = document.querySelector('.search button');
 
-    searchBtn.addEventListener('click', (event) => {
-      console.log('Clicked', event.target);
-      console.log('And the input has value ', searchInput.value);
-      this.fetchWordlabWords(searchInput.value);
-      this.fetchFlickrPhotos(searchInput.value);
-    });
 
     const sidebarWords = document.querySelectorAll('aside ul li a');
 
@@ -117,8 +124,10 @@ function renderFlickrPhotos(photoData) {
       });
     });
   }
+*/ 
 
-  search() {
+/*
+  function search() {
     let query = this.searchInput.value;
 
     if (!query.length) {
@@ -136,24 +145,9 @@ function renderFlickrPhotos(photoData) {
       });
   }
 
-  renderFlickerPhotos(photos) {
-    const resultsHolder = document.querySelector('.results ul');
-    resultsHolder.innerHTML = "";
+*/ 
 
-    photos.forEach((photo) => {
-      const liEl = document.createElement('li');
-      const pEl = document.createElement('p');
-
-      pEl.textContent = photo.title;
-
-      liEl.style.backgroundImage = `url(${photo.url_o})`;
-      liEl.classList.add('result');
-      liEl.appendChild(pEl);
-
-      resultsHolder.appendChild(liEl);
-    });
-  }
-
+/*
   renderWordSuggestions(res) {
     const sidebarListHolder = document.querySelector('aside ul');
 
