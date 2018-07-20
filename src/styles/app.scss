@@ -36,7 +36,7 @@ main {
 aside {
   color: lightgrey;
   text-transform: capitalize;
-  border: 2px solid lightgrey; flex: 1;
+  flex: 1;
 
   #associated-words {
   display: flex;
@@ -48,7 +48,7 @@ aside {
       justify-content: center;
       font-size: 1.5em;
       line-height: 50px;
-      border-bottom: 2px solid lightgrey;
+      border-bottom: 1px solid lightgrey;
       color: lightseagreen;
 
       &:hover {
